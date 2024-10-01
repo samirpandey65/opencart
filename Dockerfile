@@ -1,36 +1,15 @@
-# Use the official PHP image as a base
-FROM php:7.4-apache
+# Use the official Nginx base image
+FROM nginx:latest
 
-# Set the working directory to the Apache root directory
-WORKDIR /var/www/html
+# Copy custom Nginx configuration file to the container (if you have one)
+# Uncomment and edit the path to your configuration file if needed
+# COPY ./my-nginx.conf /etc/nginx/nginx.conf
 
-# Install required dependencies
-RUN apt-get update && apt-get install -y \
-    unzip \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libxml2-dev \
-    libonig-dev \
-    libzip-dev \
-    curl \
-    git \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install mysqli pdo pdo_mysql zip opcache
-
-# Enable Apache rewrite module
-RUN a2enmod rewrite
-
-# Clone your GitHub repository (replace with your repo link)
-RUN git clone https://github.com/yourusername/your-opencart-repo.git /var/www/html
-
-# Set proper permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
-
-# Expose port 80
+# Expose the default Nginx port
 EXPOSE 80
 
-# Start Apache in the foreground
-CMD ["apache2-foreground"]
+# Optionally, you can add a default index.html file to the container
+# COPY ./index.html /usr/share/nginx/html/index.html
+
+# Start Nginx service
+CMD ["nginx", "-g", "daemon off;"]
